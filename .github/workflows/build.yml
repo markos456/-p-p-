@@ -1,0 +1,28 @@
+name: Build PSP EBOOT
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build with pspdev
+        run: |
+          docker run --rm -v "$PWD":/src -w /src pspdev/pspdev:latest make
+
+      - name: Package for PSP memory stick
+        run: |
+          mkdir -p dist/PSP/GAME/ArenaClash
+          cp EBOOT.PBP dist/PSP/GAME/ArenaClash/
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ArenaClash-PSP
+          path: dist/
